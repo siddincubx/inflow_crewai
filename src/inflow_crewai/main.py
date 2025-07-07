@@ -18,7 +18,7 @@ def run():
     Run the crew.
     """
     inputs = {
-        'topic': 'How is current society doing, and how will the next generation fare?',
+        'topic': 'The decision to move to a new city for a job opportunity.',
     }
     
     try:
