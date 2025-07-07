@@ -6,8 +6,9 @@ analyze_personality_task:
     relative prominence of emotions like Joy, Sadness, Anger, Disgust, and Fear.
     The output should be a clear, actionable summary (3-5 sentences) of the person's
     emotional personality, ready to guide the final response's tone and weighting.
-  expected_output: "A concise summary (3-5 sentences) of the person's emotional personality,
-    specifying dominant emotions and general outlook, extracted directly from the knowledge source."
+  expected_output: >
+    Percentage based prominence of each emotion (Joy, Sadness, Anger, Disgust, Fear) extracted directly from the knowledge source.
+    Include any quotes or specific phrases that reflect their personality traits.
   agent: personality_analyst_agent
 
 joy_response_task:
@@ -94,7 +95,7 @@ synthesize_final_response:
     2.  Synthesize a comprehensive, and final response that genuinely reflects
         the user's emotional profile, heavily swayed by their provided personality traits.
     3.  The final response MUST be written in the FIRST PERSON, as if the user themselves are speaking.
-        Use "I" statements throughout the response.
+        Use "I" statements throughout the response. Incorporate the speaking styles based on any quotes given in the personality profile.
     4.  The response should be concise (around 5-8 sentences) and directly address the topic,
         blending the emotional inputs with the determined personality emphasis,
         **focusing purely on tone based on the provided personality profile.**
