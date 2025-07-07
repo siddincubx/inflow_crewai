@@ -1,17 +1,63 @@
-research_task:
+joy_response_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
-  expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    Analyze the topic '${topic}' using the person's knowledge.
+    Generate a response from the perspective of pure joy and optimism.
+    Focus on the benefits, opportunities, and positive outcomes.
+  expected_output: "A positive and optimistic paragraph (around 3-5 sentences) about the topic from Joy's viewpoint."
+  agent: joy_agent
+  async_execution: true # These can run in parallel
 
-reporting_task:
+sadness_response_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
-  expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    Analyze the topic '${topic}' using the person's knowledge.
+    Generate a response from the perspective of sadness and empathy.
+    Focus on the challenges, difficulties, and areas requiring compassionate consideration.
+  expected_output: "An empathetic and cautious paragraph (around 3-5 sentences) about the topic from Sadness's viewpoint."
+  agent: sadness_agent
+  async_execution: true
+
+anger_response_task:
+  description: >
+    Analyze the topic '${topic}' using the person's knowledge.
+    Generate a response from the perspective of anger and frustration.
+    Focus on the injustices, obstacles, or areas that might provoke strong reactions.
+  expected_output: "A critical and potentially confrontational paragraph (around 3-5 sentences) about the topic from Anger's viewpoint."
+  agent: anger_agent
+  async_execution: true
+
+disgust_response_task:
+  description: >
+    Analyze the topic '${topic}' using the person's knowledge.
+    Generate a response from the perspective of disgust and aversion.
+    Focus on anything undesirable, unethical, or fundamentally wrong.
+  expected_output: "A disapproving and critical paragraph (around 3-5 sentences) about the topic from Disgust's viewpoint."
+  agent: disgust_agent
+  async_execution: true
+
+fear_response_task:
+  description: >
+    Analyze the topic '${topic}' using the person's knowledge.
+    Generate a response from the perspective of fear and caution.
+    Focus on potential risks, uncertainties, and dangers associated with the topic.
+  expected_output: "A cautious and warning paragraph (around 3-5 sentences) about the topic from Fear's viewpoint."
+  agent: fear_agent
+  async_execution: true
+
+synthesize_final_response:
+  description: >
+    Given the topic '${topic}', and the distinct emotional responses from Joy, Sadness, Anger, Disgust, and Fear:
+
+    1.  **Crucially, refer to the person's knowledge base to understand their personality profile and dominant emotional leanings.**
+        Identify which emotions are typically strong or dominant for this person, and which are less so.
+    2.  Based on this identified personality profile, **weigh the received emotional responses.** Prioritize and give more prominence to the insights from agents representing emotions that are described as dominant or highly influential in the person's personality. Deprioritize less dominant emotions accordingly, but still integrate them for a nuanced perspective.
+    3.  Synthesize a comprehensive, balanced, and nuanced final response that genuinely reflects the person's overall perspective, **heavily swayed by their identified personality traits.**
+    4.  The final response MUST be written in the FIRST PERSON, as if the person himself is speaking. Use "I" statements wherever appropriate.
+    5.  The response should be concise (around 5-8 sentences) and directly address the topic, blending the emotional inputs with the determined personality emphasis.
+  expected_output: "A comprehensive and balanced response (around 5-8 sentences) addressing the topic, written in the first person ('I' statements), reflecting the person's personality by prioritizing their dominant emotional traits as identified from the knowledge source, and integrating the various emotional perspectives into a single coherent answer."
+  agent: person_controller_agent
+  context:
+    - joy_response_task
+    - sadness_response_task
+    - anger_response_task
+    - disgust_response_task
+    - fear_response_task
