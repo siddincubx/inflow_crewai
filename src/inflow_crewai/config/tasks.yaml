@@ -1,3 +1,17 @@
+analyze_personality_task:
+  description: >
+    Carefully read the entire person's knowledge source to identify and summarize
+    the person's personality profile, including their dominant emotional leanings
+    and typical reactions. Extract this information concisely, highlighting the
+    relative prominence of emotions like Joy, Sadness, Anger, Disgust, and Fear.
+    The output should be a clear, actionable summary (3-5 sentences) of the person's
+    emotional personality, ready to guide the final response's tone and weighting.
+  expected_output: "A concise summary (3-5 sentences) of the person's emotional personality,
+    specifying dominant emotions and general outlook, extracted directly from the knowledge source."
+  agent: personality_analyst_agent
+  # This task needs to run before synthesis, so async_execution should not be true if sequential process,
+  # or ensure it's first in the task list.
+  
 joy_response_task:
   description: >
     Analyze the topic '${topic}' using the person's knowledge.
@@ -45,19 +59,32 @@ fear_response_task:
 
 synthesize_final_response:
   description: >
-    Given the topic '${topic}', and the distinct emotional responses from Joy, Sadness, Anger, Disgust, and Fear:
-
-    1.  **Crucially, refer to the person's knowledge base to understand their personality profile and dominant emotional leanings.**
-        Identify which emotions are typically strong or dominant for this person, and which are less so.
-    2.  Based on this identified personality profile, **weigh the received emotional responses.** Prioritize and give more prominence to the insights from agents representing emotions that are described as dominant or highly influential in the person's personality. Deprioritize less dominant emotions accordingly, but still integrate them for a nuanced perspective.
-    3.  Synthesize a comprehensive, balanced, and nuanced final response that genuinely reflects the person's overall perspective, **heavily swayed by their identified personality traits.**
-    4.  The final response MUST be written in the FIRST PERSON, as if the person himself is speaking. Use "I" statements wherever appropriate.
-    5.  The response should be concise (around 5-8 sentences) and directly address the topic, blending the emotional inputs with the determined personality emphasis.
-  expected_output: "A comprehensive and balanced response (around 5-8 sentences) addressing the topic, written in the first person ('I' statements), reflecting the person's personality by prioritizing their dominant emotional traits as identified from the knowledge source, and integrating the various emotional perspectives into a single coherent answer."
+    Given the topic '${topic}', the distinct emotional responses from Joy, Sadness, Anger, Disgust, and Fear,
+    AND the following pre-analyzed personality profile for the person:
+    ---
+    Personality Profile: {{analyze_personality_task.output}}
+    ---
+    1.  Based on this *provided* personality profile, weigh the received emotional responses.
+        Prioritize and give more prominence to the insights from agents representing emotions
+        that are described as dominant or highly influential in the person's personality.
+        Deprioritize less dominant emotions accordingly, but still integrate them for a nuanced perspective.
+    2.  Synthesize a comprehensive, balanced, and nuanced final response that genuinely reflects
+        the person's overall perspective, heavily swayed by their provided personality traits.
+    3.  The final response MUST be written in the FIRST PERSON, as if the person himself is speaking.
+        Use "I" statements throughout the response.
+    4.  The response should be concise (around 5-8 sentences) and directly address the topic,
+        blending the emotional inputs with the determined personality emphasis,
+        **focusing purely on formatting and tone based on the provided personality profile.**
+  expected_output: "A comprehensive and balanced response (around 5-8 sentences) addressing the topic,
+    written in the first person ('I' statements), reflecting the person's personality by prioritizing their
+    dominant emotional traits as provided by the Personality Analyst, and integrating the various emotional
+    perspectives into a single coherent answer, with appropriate tone and formatting."
   agent: person_controller_agent
   context:
+    - analyze_personality_task 
     - joy_response_task
     - sadness_response_task
     - anger_response_task
     - disgust_response_task
     - fear_response_task
+    

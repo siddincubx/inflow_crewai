@@ -4,9 +4,18 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from typing import List
 from crewai import LLM
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
+llm_key = os.getenv('GEMINI_API_KEY')
+if not llm_key:
+    raise ValueError("Please set the GEMINI_API_KEY environment variable with your Gemini API key.")
 
 llm = LLM(
-    model="gemini/gemini-2.0-flash",
+    model="gemini/gemini-2.0-flash-lite",
+    api_key=llm_key,
     temperature=0.7,
 )
 # If you want to run a snippet of code before or after the crew starts,
@@ -67,8 +76,22 @@ class InsideOutCrew():
             config=self.agents_config['person_controller_agent'], # type: ignore
             llm=llm
         )
+    @agent
+    def personality_analyst_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config['personality_analyst_agent'], # type: ignore
+            llm=llm
+        )
 
     # Define your tasks using the @task decorator
+
+
+    @task
+    def analyze_personality_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['analyze_personality_task'], # type: ignore
+        )
+    
     @task
     def joy_response_task(self) -> Task:
         return Task(
@@ -104,6 +127,7 @@ class InsideOutCrew():
         return Task(
             config=self.tasks_config['synthesize_final_response'] # type: ignore
         )
+
 
     @crew
     def crew(self) -> Crew:
