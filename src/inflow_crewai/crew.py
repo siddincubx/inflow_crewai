@@ -14,9 +14,9 @@ if not llm_key:
     raise ValueError("Please set the GEMINI_API_KEY environment variable with your Gemini API key.")
 
 llm = LLM(
-    model="gemini/gemini-2.0-flash-lite",
+    model="gemini/gemini-2.0-flash",
     api_key=llm_key,
-    temperature=0.7,
+    temperature=0.4,
 )
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -143,9 +143,15 @@ class InsideOutCrew():
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            process=Process.sequential, # Important for synthesis to happen after emotional responses
+            process=Process.sequential,
             verbose=True,
-            # Assign the knowledge sources to the entire crew
-            # This makes the knowledge available to all agents
-            knowledge_sources=[user_profile_knowledge]
+            max_rpm=25,
+            knowledge_sources=[user_profile_knowledge],
+            embedder={
+                "provider": "google",
+                "config": {
+                    "model": "models/text-embedding-004",
+                    "api_key": llm_key
+                }
+            }
         )
