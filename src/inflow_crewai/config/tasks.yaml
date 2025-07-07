@@ -9,76 +9,95 @@ analyze_personality_task:
   expected_output: "A concise summary (3-5 sentences) of the person's emotional personality,
     specifying dominant emotions and general outlook, extracted directly from the knowledge source."
   agent: personality_analyst_agent
-  # This task needs to run before synthesis, so async_execution should not be true if sequential process,
-  # or ensure it's first in the task list.
-  
+
 joy_response_task:
   description: >
-    Analyze the topic '${topic}' using the person's knowledge.
-    Generate a response from the perspective of pure joy and optimism.
-    Focus on the benefits, opportunities, and positive outcomes.
-  expected_output: "A positive and optimistic paragraph (around 3-5 sentences) about the topic from Joy's viewpoint."
+    Analyze the topic '${topic}'. Simultaneously, parse the person's
+    knowledge. **Assess the relevance and quantity of joyful, optimistic, or positive
+    instances/concepts within the knowledge text related to the topic.**
+    Based on this assessment, generate a response from Joy's perspective:
+    - If joy is highly prevalent/relevant in the knowledge, provide a more detailed and expansive response (e.g., several sentences/paragraph).
+    - If joy is less prevalent/relevant, provide a shorter, more concise response (e.g., one or two brief sentences).
+    Focus on specific facts, experiences, or future possibilities from the knowledge that evoke joy.
+  expected_output: "A positive and optimistic paragraph about the topic, grounded in specific joyful details from the knowledge, with length adjusted based on joy's prevalence in the knowledge."
   agent: joy_agent
-  async_execution: true # These can run in parallel
+  async_execution: true
 
 sadness_response_task:
   description: >
-    Analyze the topic '${topic}' using the person's knowledge.
-    Generate a response from the perspective of sadness and empathy.
-    Focus on the challenges, difficulties, and areas requiring compassionate consideration.
-  expected_output: "An empathetic and cautious paragraph (around 3-5 sentences) about the topic from Sadness's viewpoint."
+    Analyze the topic '${topic}'. Simultaneously, parse the person's
+    knowledge. **Assess the relevance and quantity of sad, challenging, or empathetic
+    instances/concepts within the knowledge text related to the topic.**
+    Based on this assessment, generate a response from Sadness's perspective:
+    - If sadness is highly prevalent/relevant in the knowledge, provide a more detailed and expansive response.
+    - If sadness is less prevalent/relevant, provide a shorter, more concise response.
+    Focus on specific facts, past challenges, or potential losses from the knowledge that evoke sadness or empathy.
+  expected_output: "An empathetic and cautious paragraph about the topic, grounded in specific difficult or sad details from the knowledge, with length adjusted based on sadness's prevalence in the knowledge."
   agent: sadness_agent
   async_execution: true
 
 anger_response_task:
   description: >
-    Analyze the topic '${topic}' using the person's knowledge.
-    Generate a response from the perspective of anger and frustration.
-    Focus on the injustices, obstacles, or areas that might provoke strong reactions.
-  expected_output: "A critical and potentially confrontational paragraph (around 3-5 sentences) about the topic from Anger's viewpoint."
+    Analyze the topic '${topic}'. Simultaneously, parse the person's
+    knowledge. **Assess the relevance and quantity of angry, frustrating, or unjust
+    instances/concepts within the knowledge text related to the topic.**
+    Based on this assessment, generate a response from Anger's perspective:
+    - If anger is highly prevalent/relevant in the knowledge, provide a more detailed and expansive response.
+    - If anger is less prevalent/relevant, provide a shorter, more concise response.
+    Focus on specific facts, past injustices, or perceived threats from the knowledge that provoke anger.
+  expected_output: "A critical and potentially confrontational paragraph about the topic,
+    grounded in specific frustrating or unjust details from the knowledge, with length adjusted based on anger's prevalence in the knowledge."
   agent: anger_agent
   async_execution: true
 
 disgust_response_task:
   description: >
-    Analyze the topic '${topic}' using the person's knowledge.
-    Generate a response from the perspective of disgust and aversion.
-    Focus on anything undesirable, unethical, or fundamentally wrong.
-  expected_output: "A disapproving and critical paragraph (around 3-5 sentences) about the topic from Disgust's viewpoint."
+    Analyze the topic '${topic}'. Simultaneously, parse the person's
+    knowledge. **Assess the relevance and quantity of disgusting, undesirable, or unethical
+    instances/concepts within the knowledge text related to the topic.**
+    Based on this assessment, generate a response from Disgust's perspective:
+    - If disgust is highly prevalent/relevant in the knowledge, provide a more detailed and expansive response.
+    - If disgust is less prevalent/relevant, provide a shorter, more concise response.
+    Focus on specific facts, concepts, or past instances from the knowledge that evoke disgust or strong disapproval.
+  expected_output: "A disapproving and critical paragraph about the topic,
+    grounded in specific undesirable details from the knowledge, with length adjusted based on disgust's prevalence in the knowledge."
   agent: disgust_agent
   async_execution: true
 
 fear_response_task:
   description: >
-    Analyze the topic '${topic}' using the person's knowledge.
-    Generate a response from the perspective of fear and caution.
-    Focus on potential risks, uncertainties, and dangers associated with the topic.
-  expected_output: "A cautious and warning paragraph (around 3-5 sentences) about the topic from Fear's viewpoint."
+    Analyze the topic '${topic}'. Simultaneously, parse the person's
+    knowledge. **Assess the relevance and quantity of fearful, cautious, or risky
+    instances/concepts within the knowledge text related to the topic.**
+    Based on this assessment, generate a response from Fear's perspective:
+    - If fear is highly prevalent/relevant in the knowledge, provide a more detailed and expansive response.
+    - If fear is less prevalent/relevant, provide a shorter, more concise response.
+    Focus on specific facts, potential uncertainties, or historical risks from the knowledge that evoke fear or caution.
+  expected_output: "A cautious and warning paragraph about the topic,
+    grounded in specific risky or uncertain details from the knowledge, with length adjusted based on fear's prevalence in the knowledge."
   agent: fear_agent
   async_execution: true
 
 synthesize_final_response:
   description: >
     Given the topic '${topic}', the distinct emotional responses from Joy, Sadness, Anger, Disgust, and Fear,
-    AND the following pre-analyzed personality profile for the person:
-    ---
-    Personality Profile: {{analyze_personality_task.output}}
-    ---
+    AND the following pre-analyzed personality profile for the person, generate a final, synthesized response.        
+  expected_output: >
+    A final, synthesized response that reflects the user's emotional profile,
+    heavily influenced by their personality traits. The response should be concise (5-8 sentences), 
+    based on the pre-analyzed personality profile
+    
     1.  Based on this *provided* personality profile, weigh the received emotional responses.
         Prioritize and give more prominence to the insights from agents representing emotions
         that are described as dominant or highly influential in the person's personality.
         Deprioritize less dominant emotions accordingly, but still integrate them for a nuanced perspective.
-    2.  Synthesize a comprehensive, balanced, and nuanced final response that genuinely reflects
-        the person's overall perspective, heavily swayed by their provided personality traits.
-    3.  The final response MUST be written in the FIRST PERSON, as if the person himself is speaking.
+    2.  Synthesize a comprehensive, and final response that genuinely reflects
+        the user's emotional profile, heavily swayed by their provided personality traits.
+    3.  The final response MUST be written in the FIRST PERSON, as if the user themselves are speaking.
         Use "I" statements throughout the response.
     4.  The response should be concise (around 5-8 sentences) and directly address the topic,
         blending the emotional inputs with the determined personality emphasis,
-        **focusing purely on formatting and tone based on the provided personality profile.**
-  expected_output: "A comprehensive and balanced response (around 5-8 sentences) addressing the topic,
-    written in the first person ('I' statements), reflecting the person's personality by prioritizing their
-    dominant emotional traits as provided by the Personality Analyst, and integrating the various emotional
-    perspectives into a single coherent answer, with appropriate tone and formatting."
+        **focusing purely on tone based on the provided personality profile.**
   agent: person_controller_agent
   context:
     - analyze_personality_task 
